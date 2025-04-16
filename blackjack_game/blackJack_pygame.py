@@ -95,7 +95,7 @@ def calculate_score(hand):
 def draw_score(player, dealer):
     screen.blit(font.render(f"Score: {player}", True, 'white'), (350, 400))
     if reveal_dealer:     # De score van de deler wordt alleen getoond aan het eind van het spel als reveal_dealer(=True)
-            screen.blit(font.render(f"Score: {player}", True, 'white'), (350, 100))
+            screen.blit(font.render(f"Score: {dealer}", True, 'white'), (350, 100))
 
 
 # Game condities en knoppen toevoegen
@@ -131,8 +131,13 @@ def draw_game(act, record, result):
 
     # Als er een uitkomst is moet die op het scherm gezet worden, en komt er een herstart knop
     if result != 0:      # Als er een uitslag is
-
-
+        screen.blit(font.render(results[result], True, "white"), (15, 25))
+        deal = pygame.draw.rect(screen, "white", [150, 220, 300, 100], 0, 5) # Met draw.rect een rechthoek tekenen op het scherm
+        pygame.draw.rect(screen, "green", [150, 220, 300, 100], 3, 5) # Rand maken om rechthoek
+        pygame.draw.rect(screen, "black", [153, 223, 294, 94], 3, 5) # Rand maken om rechthoek
+        deal_text = font.render("NEW HAND", True, "black") # tekst maken
+        screen.blit(deal_text, (165, 250)) # tekst op het scherm plakken
+        button_list.append(deal) # Deal Hand op scherm
 
     return button_list
 
@@ -151,14 +156,14 @@ def check_endgame(hand_act, dealer_score, player_score, result, totals, add):
         else:                                                           # Gelijk spel
             result = 4
 
-    if add:
-        if result == 1 or result == 3:  # Bij verlies
-            totals[1] += 1
-        elif result == 2:               # Bij wist
-            totals[0] += 1
-        else:                           # Bij gelijkspel
-            totals[2] += 1
-        add = False
+        if add:
+            if result == 1 or result == 3:  # Bij verlies
+                totals[1] += 1
+            elif result == 2:               # Bij wist
+                totals[0] += 1
+            else:                           # Bij gelijkspel
+                totals[2] += 1
+            add = False
 
     return result, totals, add
 
@@ -216,6 +221,7 @@ while run:          # Blijft lopen zolang de game "draait"abs
                     dealer_hand = []        # reset deler hand
                     outcome = 0             # uitkomst reset
                     hand_active = True      # hand wordt actief
+                    reveal_dealer = False   # reset kaarten deeler verborgen
                     add_score = True        # resset zodat score geteld kan worden       
 
             else: # Hier onder kijken we naar een klick op hit me als de speler score lager is dan 21 en het spel actief is
@@ -224,6 +230,21 @@ while run:          # Blijft lopen zolang de game "draait"abs
                 elif buttons[1].collidepoint(event.pos) and not reveal_dealer:  # Als er geklikt wordt op stand stopt het spel en wordt de score deler zichtbaar
                     reveal_dealer = True        # Kaarten en score deler zichtbaar
                     hand_active = False         # Spel stopt
+                elif len(buttons) == 3:
+                    if buttons[2]. collidepoint(event.pos):
+                        # Alles wordt gereset
+                        active = True 
+                        initial_deal = True 
+                        game_deck = copy.deepcopy(decks * kaart_spel) 
+                        my_hand = []            
+                        dealer_hand = []        
+                        outcome = 0             
+                        hand_active = True      
+                        reveal_dealer = False   
+                        add_score = True
+                        dealer_score = 0
+                        player_score = 0           
+
 
     # Als de speler over 21 gaat automatisch spel stoppen
     if hand_active and player_score >= 21:
