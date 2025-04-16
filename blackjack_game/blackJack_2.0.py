@@ -13,11 +13,13 @@ kaart_spel = 4 * kaarten
 decks = 4 #Met hoeveel kaartspelen wordt gespeeld
 
 # Aanmaken variabele voor de grote van het spel (pygame window/scherm)
-WIDTH = 600
-HEIGHT = 900
+WIDTH = 900
+HEIGHT = 700
 
 # game instellingen
 screen = pygame.display.set_mode([WIDTH, HEIGHT]) # Surface-object (een soort canvas)
+background = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/backgroundJungleSteampunk.webp").convert_alpha()
+background.set_alpha(180)  # Lichter maken
 pygame.display.set_caption("Pygame BlackJack") # Titel voor de adressbalk 
 fps = 60 # Frames per seconde
 timer = pygame.time.Clock()
@@ -179,7 +181,7 @@ while run:          # Blijft lopen zolang de game "draait"abs
     
     # Game laten draaien op framerate en achtergrond instellen
     timer.tick(fps)
-    screen.fill("black")
+    screen.blit(background, (0, 0))
 
     # Eerst beurt voor speler en dealer
     if initial_deal:
