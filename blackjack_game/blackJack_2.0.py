@@ -16,21 +16,32 @@ decks = 4 #Met hoeveel kaartspelen wordt gespeeld
 WIDTH = 1024
 HEIGHT = 700
 
+# afmetingen kaarten 
+card_breedte = 120
+card_lengte = 180
+card_ruimte = 90  # horizontale afstand tussen kaarten
+text_offset_y = 15
+
+# positie speler en deler
+player_y = 480
+dealer_y = 50
+
 # game instellingen
 screen = pygame.display.set_mode([WIDTH, HEIGHT]) # Surface-object (een soort canvas)
-
-# Afbeeldingen inladen en alpha waarde aanpassen
-background = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/backgroundJungleSteampunk.webp").convert_alpha()
-background.set_alpha(120)  # Lichter maken
-logo_image = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/logoSteampunkProgramar.webp").convert_alpha()
-logo_scaled = pygame.transform.scale(logo_image, (350, 350))
-logo_rect = logo_scaled.get_rect(center=(WIDTH // 1.5, HEIGHT // 3))
-
 pygame.display.set_caption("Pygame BlackJack") # Titel voor de adressbalk 
 fps = 60 # Frames per seconde
 timer = pygame.time.Clock()
 font = pygame.font.Font("freesansbold.ttf", 44) # font-family en font-size
 smaller_font = pygame.font.Font("freesansbold.ttf", 36) # font-family en font-size
+
+
+# Afbeeldingen inladen en alpha waarde aanpassen
+background = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/backgroundJungleSteampunk.webp").convert_alpha()
+background.set_alpha(120)  # Lichter maken
+logo_image = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/logoSteampunkProgramar.webp").convert_alpha()
+logo_scaled = pygame.transform.scale(logo_image, (350, 350))    # Grote plaatje instellen
+logo_rect = logo_scaled.get_rect(center=(WIDTH // 1.5, HEIGHT // 3))    # Plaatje tekenen ten opzichte van het midden
+
 
 # variabelen voor de gameplay
 active = False # Is er een spel gaande
@@ -61,6 +72,7 @@ def deal_cards(current_hand, current_deck):
 
 # Kaarten tekenen op het scherm
 def draw_cards(player, dealer, reveal):
+    # Kaarten Speler:
     for i in range(len(player)):
         pygame.draw.rect(screen, "white", [70 + (70 * i), 460 + (5 * i), 120, 220], 0, 5)
         screen.blit(font.render(player[i], True, "black"), (75 + 70*i, 465 + 5*i))
@@ -69,6 +81,7 @@ def draw_cards(player, dealer, reveal):
 
     # Als de spel nog niet klaar is verberg 1 kaart van de dealer
     for i in range(len(dealer)):
+        # Kaarten deler
         pygame.draw.rect(screen, "white", [70 + (70 * i), 160 + (5 * i), 120, 220], 0, 5)
         if i !=0 or reveal:
             screen.blit(font.render(dealer[i], True, "black"), (75 + 70*i, 165 + 5*i))
@@ -102,9 +115,9 @@ def calculate_score(hand):
 
 # De berekende score per hand tekenen in de game
 def draw_score(player, dealer):
-    screen.blit(font.render(f"Score: {player}", True, 'white'), (350, 400))
+    screen.blit(font.render(f"Score: {player}", True, 'white'), (600, 400))
     if reveal_dealer:     # De score van de deler wordt alleen getoond aan het eind van het spel als reveal_dealer(=True)
-            screen.blit(font.render(f"Score: {dealer}", True, 'white'), (350, 100))
+            screen.blit(font.render(f"Score: {dealer}", True, 'white'), (600, 100))
 
 
 # Game condities en knoppen toevoegen
