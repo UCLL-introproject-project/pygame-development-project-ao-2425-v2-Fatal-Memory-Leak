@@ -12,17 +12,20 @@ pygame.init() #initialiseert alle Pygame-modules
 kaarten = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'B', 'V', 'K', 'A']
 kaart_spel = 4 * kaarten
 decks = 4 #Met hoeveel kaartspelen wordt gespeeld
-# print(game_deck) #controlle
 
 # Aanmaken variabele voor de grote van het spel (pygame window/scherm)
 WIDTH = 600
 HEIGHT = 900
+
+# game instellingen
 screen = pygame.display.set_mode([WIDTH, HEIGHT]) # Surface-object (een soort canvas)
 pygame.display.set_caption("Pygame BlackJack") # Titel voor de adressbalk 
 fps = 60 # Frames per seconde
 timer = pygame.time.Clock()
 font = pygame.font.Font("freesansbold.ttf", 44) # font-family en font-size
 smaller_font = pygame.font.Font("freesansbold.ttf", 36) # font-family en font-size
+
+# variabelen voor de gameplay
 active = False # Is er een spel gaande
 records = [0, 0, 0] # winst, verlies, gelijkspel
 player_score = 0 # Bereken hoeveel punten de speler in zijn handen heeft aan kaarten
@@ -30,10 +33,9 @@ dealer_score = 0 # Hoeveel punten heeft de dealer
 initial_deal = False # Eerste beurt wijkt af omdat er dan 2 kaarten gedeeld worden
 my_hand = [] # Kaarten in spelers hand
 dealer_hand = [] # Kaarten in de delers hand
-outcome = 0 # 
+outcome = 0 # Waarde wordt gebruikt om een element uit de lijst results te kiezen
 reveal_dealer = False # kaarten van de deler zijn geheim tot het einde van het spel
 hand_active = False #Na de deeling wordt de hand active gemaakt door event handling
-outcome = 0
 add_score = False
 results = ["", "Player Busted", "Player Wins", "Dealer Wins", "Tie Game"]
 
@@ -146,7 +148,7 @@ def draw_game(act, record, result):
 def check_endgame(hand_act, dealer_score, player_score, result, totals, add):
     # Mogelijke resultaten, spelerscore <21, speler stood of blackjack
     # Resutaat 1-speler >21, 2-win, 3-loss, 4-gelijkspel
-    if not hand_active and dealer_score >= 17:      # ?? is de controle van dealer score nodig?? deze wordt ergens anders afgevangen??
+    if not hand_active and dealer_score >= 17:     
         if player_score > 21:       # meer dan 21 punten is standaard verlies
             result = 1              # speler verliest
         elif dealer_score < player_score <= 21 or dealer_score > 21:    #Speler wint
@@ -182,11 +184,11 @@ while run:          # Blijft lopen zolang de game "draait"abs
 
     # Eerst beurt voor speler en dealer
     if initial_deal:
-        for i in range(2):
+        for i in range(2):      # Eerste beurt worden er om en om in totaal twee kaarten gedeeld voor speler en dealer
             my_hand,game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         #print(my_hand, dealer_hand)
-        initial_deal = False
+        initial_deal = False    # na de eerste beurt 1 kaart per beurt
 
     # Als het stel active(true) is, er kaarten gedeeld zijn, bereken de score en teken de kaarten
     if active:
@@ -199,7 +201,7 @@ while run:          # Blijft lopen zolang de game "draait"abs
                 dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
 
         draw_score(player_score, dealer_score)              # teken de score op het scherm
-    buttons = draw_game(active, records, outcome)
+    buttons = draw_game(active, records, outcome)           
 
 
     # Event handling, voor afsluiten spel
