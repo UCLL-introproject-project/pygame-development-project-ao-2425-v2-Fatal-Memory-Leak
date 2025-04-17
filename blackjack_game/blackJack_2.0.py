@@ -31,8 +31,8 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT]) # Surface-object (een soort ca
 pygame.display.set_caption("Pygame BlackJack") # Titel voor de adressbalk 
 fps = 60 # Frames per seconde
 timer = pygame.time.Clock()
-font = pygame.font.Font("freesansbold.ttf", 44) # font-family en font-size
-smaller_font = pygame.font.Font("freesansbold.ttf", 36) # font-family en font-size
+font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/marimpa/Marimpa.ttf", 44) # font-family en font-size
+smaller_font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/marimpa/Marimpa.ttf", 36) # font-family en font-size
 
 
 # Afbeeldingen inladen en alpha waarde aanpassen
@@ -74,23 +74,34 @@ def deal_cards(current_hand, current_deck):
 def draw_cards(player, dealer, reveal):
     # Kaarten Speler:
     for i in range(len(player)):
-        pygame.draw.rect(screen, "white", [70 + (70 * i), 460 + (5 * i), 120, 220], 0, 5)
-        screen.blit(font.render(player[i], True, "black"), (75 + 70*i, 465 + 5*i))
-        screen.blit(font.render(player[i], True, "black"), (75 + 70*i, 635 + 5*i))
-        pygame.draw.rect(screen, "red", [70 + (70 * i), 460 + (5 * i), 120, 220], 5, 5)
+        x = 50 + i * card_ruimte
+        y = player_y + i * 10  # nieuwe variabele voor de aangepaste y-positie
+        
+        # groene kaart
+        pygame.draw.rect(screen, (0, 100, 0), [x, y, card_breedte, card_lengte], 0, 5)
+        
+        # tekst bovenaan en onderaan de kaart
+        screen.blit(font.render(player[i], True, (0, 0, 0)), (x + 10, y + text_offset_y))
+        screen.blit(font.render(player[i], True, (0, 0, 0)), (x + 10, y + card_lengte - 50))
+        
+        # zwarte rand
+        pygame.draw.rect(screen, (0, 0, 0), [x, y, card_breedte, card_lengte], 5, 5)
+
 
     # Als de spel nog niet klaar is verberg 1 kaart van de dealer
     for i in range(len(dealer)):
         # Kaarten deler
-        pygame.draw.rect(screen, "white", [70 + (70 * i), 160 + (5 * i), 120, 220], 0, 5)
-        if i !=0 or reveal:
-            screen.blit(font.render(dealer[i], True, "black"), (75 + 70*i, 165 + 5*i))
-            screen.blit(font.render(dealer[i], True, "black"), (75 + 70*i, 335 + 5*i))
+        x = 50 + i * card_ruimte
+        y = dealer_y + i * 10  # nieuwe variabele voor de aangepaste y-positie
+        pygame.draw.rect(screen, (144, 238, 144), [x, y, card_breedte, card_lengte], 0, 5)
+        
+        if i != 0 or reveal:
+            screen.blit(font.render(dealer[i], True, (0, 0, 0)), (x + 10, y + text_offset_y))
+            screen.blit(font.render(dealer[i], True, (0, 0, 0)), (x + 10, y + card_lengte - 50))
         else:
-            screen.blit(font.render("???", True, "black"), (75 + 70*i, 165 + 5*i))
-            screen.blit(font.render("???", True, "black"), (75 + 70*i, 335 + 5*i))
-        pygame.draw.rect(screen, "blue", [70 + (70 * i), 160 + (5 * i), 120, 220], 5, 5)
-
+            screen.blit(font.render('??', True, (0, 0, 0)), (x + 10, y + text_offset_y))
+            screen.blit(font.render('??', True, (0, 0, 0)), (x + 10, y + card_lengte - 50))
+        pygame.draw.rect(screen, (0, 0, 0), [x, y, card_breedte, card_lengte], 5, 5)
 
 # Bereken de score van de kaarten in een hand (speler of deler)
 def calculate_score(hand):
@@ -115,9 +126,9 @@ def calculate_score(hand):
 
 # De berekende score per hand tekenen in de game
 def draw_score(player, dealer):
-    screen.blit(font.render(f"Score: {player}", True, 'white'), (600, 400))
+    screen.blit(font.render(f"Player Score: {player}", True, 'white'), (50, 400))
     if reveal_dealer:     # De score van de deler wordt alleen getoond aan het eind van het spel als reveal_dealer(=True)
-            screen.blit(font.render(f"Score: {dealer}", True, 'white'), (600, 100))
+            screen.blit(font.render(f"Dealer Score: {dealer}", True, 'white'), (50, 260))
 
 
 # Game condities en knoppen toevoegen
@@ -126,39 +137,39 @@ def draw_game(act, record, result):
 
     #Spel opstarten als active(=False), nieuwe hand delen
     if not act:
-        deal = pygame.draw.rect(screen, "white", [150, 20, 300, 100], 0, 5) # Met draw.rect een rechthoek tekenen op het scherm
-        pygame.draw.rect(screen, "green", [150, 20, 300, 100], 3, 5) # Rand maken om rechthoek
+        deal = pygame.draw.rect(screen, (0, 100, 0), [530, 450, 300, 100], 0, 5) # Met draw.rect een rechthoek tekenen op het scherm
+        pygame.draw.rect(screen, "black", [530, 450, 300, 100], 3, 5) # Rand maken om rechthoek
         deal_text = font.render("DEAL HAND", True, "black") # tekst maken
-        screen.blit(deal_text, (165, 50)) # tekst op het scherm plakken
+        screen.blit(deal_text, (555, 480)) # tekst op het scherm plakken
         button_list.append(deal) # Deal Hand op scherm
 
     # Als het spel gestart is geef opties voor hit and stand
     else:
         #hit button
-        hit = pygame.draw.rect(screen, "white", [0, 700, 300, 100], 0, 5)
-        pygame.draw.rect(screen, "green", [0, 700, 300, 100], 3, 5)
+        hit = pygame.draw.rect(screen, (0, 100, 0), [530, 620, 200, 70], 0, 5)
+        pygame.draw.rect(screen, "black", [530, 620, 200, 70], 3, 5)
         hit_text = font.render("HIT ME", True, "black")
-        screen.blit(hit_text, (55, 735)) #Plakt de tekst (text_surface) op deze coördinaten (x, y) op het scherm
+        screen.blit(hit_text, (555, 635)) #Plakt de tekst (text_surface) op deze coördinaten (x, y) op het scherm
         button_list.append(hit)
 
         #stand button
-        stand = pygame.draw.rect(screen, "white", [300, 700, 300, 100], 0, 5)
-        pygame.draw.rect(screen, "green", [300, 700, 300, 100], 3, 5)
+        stand = pygame.draw.rect(screen, (0, 100, 0), [750, 620, 200, 70], 0, 5)
+        pygame.draw.rect(screen, "black", [750, 620, 200, 70], 3, 5)
         stand_text = font.render("STAND", True, "black")
-        screen.blit(stand_text, (355, 735))
+        screen.blit(stand_text, (785, 635))
         button_list.append(stand)
 
         score_text = smaller_font.render(f"Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}", True, "white")
-        screen.blit(score_text, (15, 840))
+        screen.blit(score_text, (450, 10))
 
     # Als er een uitkomst is moet die op het scherm gezet worden, en komt er een herstart knop
     if result != 0:      # Als er een uitslag is
-        screen.blit(font.render(results[result], True, "white"), (15, 25))
-        deal = pygame.draw.rect(screen, "white", [150, 220, 300, 100], 0, 5) # Met draw.rect een rechthoek tekenen op het scherm
-        pygame.draw.rect(screen, "green", [150, 220, 300, 100], 3, 5) # Rand maken om rechthoek
-        pygame.draw.rect(screen, "black", [153, 223, 294, 94], 3, 5) # Rand maken om rechthoek
+        screen.blit(font.render(results[result], True, "white"), (580, 420))
+        deal = pygame.draw.rect(screen, (0, 100, 0), [580, 500, 300, 100], 0, 5) # Met draw.rect een rechthoek tekenen op het scherm
+        pygame.draw.rect(screen, "black", [580, 500, 300, 100], 3, 5) # Rand maken om rechthoek
+        pygame.draw.rect(screen, "white", [583, 503, 294, 94], 3, 5) # Rand maken om rechthoek
         deal_text = font.render("NEW HAND", True, "black") # tekst maken
-        screen.blit(deal_text, (165, 250)) # tekst op het scherm plakken
+        screen.blit(deal_text, (610, 525)) # tekst op het scherm plakken
         button_list.append(deal) # Deal Hand op scherm
 
     return button_list
