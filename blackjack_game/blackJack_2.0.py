@@ -1,11 +1,14 @@
-###################### Importeren van alle modules en initiatie van pygame-modules #####################
+# Importeren van alle modules en initiatie van pygame-modules 
 import random
 import pygame
 
 pygame.init() #initialiseert alle Pygame-modules
+pygame.mixer.init()
 
 
-##################################### Aanmaken van alle variabele ####################################
+#-----------------------------------------------#
+#          Aanmaken van alle variabele          #
+#-----------------------------------------------#
 
 # Deck met kaarten aanmaken voor het spel
 kaarten = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'B', 'V', 'K', 'A']
@@ -16,31 +19,36 @@ decks = 4 #Met hoeveel kaartspelen wordt gespeeld
 WIDTH = 1024
 HEIGHT = 700
 
-# afmetingen kaarten 
+# Afmetingen kaarten 
 card_breedte = 120
 card_lengte = 180
-card_ruimte = 90  # horizontale afstand tussen kaarten
+card_ruimte = 90  # Horizontale afstand tussen kaarten
 text_offset_y = 15
 
-# positie speler en deler
+# Positie speler en deler
 player_y = 480
 dealer_y = 50
 
-# game instellingen
+# Game instellingen
 screen = pygame.display.set_mode([WIDTH, HEIGHT]) # Surface-object (een soort canvas)
 pygame.display.set_caption("Pygame BlackJack") # Titel voor de adressbalk 
 fps = 60 # Frames per seconde
 timer = pygame.time.Clock()
-font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/marimpa/Marimpa.ttf", 44) # font-family en font-size
-smaller_font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/marimpa/Marimpa.ttf", 36) # font-family en font-size
-
+font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 44) # font-family en font-size
+smaller_font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 36) # font-family en font-size
 
 # Afbeeldingen inladen en alpha waarde aanpassen
-background = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/backgroundJungleSteampunk.webp").convert_alpha()
+background = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/backgroundJungleSteampunk.webp").convert_alpha()
 background.set_alpha(120)  # Lichter maken
-logo_image = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/logoSteampunkProgramar.webp").convert_alpha()
+logo_image = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/logoSteampunkProgramar.webp").convert_alpha()
 logo_scaled = pygame.transform.scale(logo_image, (350, 350))    # Grote plaatje instellen
 logo_rect = logo_scaled.get_rect(center=(WIDTH // 1.5, HEIGHT // 3))    # Plaatje tekenen ten opzichte van het midden
+
+# Geluiden inladen 
+deal_hand_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/game-start-6104.mp3")
+winning_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/goodresult-82807.mp3")
+losing_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/game-over-arcade-6435.mp3")
+draw_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/video-game-bonus-323603.mp3")
 
 
 # variabelen voor de gameplay
@@ -59,14 +67,56 @@ results = ["", "Player Busted", "Player Wins", "Dealer Wins", "Tie Game"]
 
 
 
-####################################### Functies aanmaken #########################################
+#----------------------------------#
+#       Aanmaken button classe     #
+#----------------------------------#
+
+
+class Button:
+    def __init__(self, text, x, y, width, height, font, base_color, hover_color, text_color, hover_text_color):
+        self.text = text
+        self.rect = pygame.Rect(x, y, width, height)    # Rechthoek maken voor vorm knop
+        self.font = font
+        self.base_color = base_color
+        self.hover_color = hover_color
+        self.text_color = text_color
+        self.hover_text_color = hover_text_color
+
+    def draw(self, screen):
+        mouse_pos = pygame.mouse.get_pos()                  # Muis volgen voor hover
+        is_hovered = self.rect.collidepoint(mouse_pos)      # Als muis boven knop hover=true
+
+        # Kleuren op basis van hover instellen
+        bg_color = self.hover_color if is_hovered else self.base_color
+        txt_color = self.hover_text_color if is_hovered else self.text_color
+
+        # Teken knop en rand
+        pygame.draw.rect(screen, bg_color, self.rect, 0, 5)  # knop-achtergrond
+        pygame.draw.rect(screen, (0, 0, 0), self.rect, 3, 5)  # Zwarte rand knoppen
+
+        # Teken centreren in de knoppen
+        text_surface = self.font.render(self.text, True, txt_color)
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        screen.blit(text_surface, text_rect)
+
+    def is_clicked(self, event):
+        if event.type == pygame.MOUSEBUTTONUP:
+            if self.rect.collidepoint(event.pos):
+                return True
+        return False
+
+
+
+#-----------------------------#
+#       Functies aanmeken     #
+#-----------------------------#
 
 # Deel 1 kaart per keer random uit het game deck 
 def deal_cards(current_hand, current_deck):
     card = random.randint(0, len(current_deck)-1)
     current_hand.append(current_deck[card])
     current_deck.pop(card)
-    #print(current_hand, current_deck)
+    # print(current_hand, current_deck)
     return current_hand, current_deck
 
 
@@ -137,27 +187,53 @@ def draw_game(act, record, result):
 
     #Spel opstarten als active(=False), nieuwe hand delen
     if not act:
-        deal = pygame.draw.rect(screen, (0, 100, 0), [530, 450, 300, 100], 0, 5) # Met draw.rect een rechthoek tekenen op het scherm
-        pygame.draw.rect(screen, "black", [530, 450, 300, 100], 3, 5) # Rand maken om rechthoek
-        deal_text = font.render("DEAL HAND", True, "black") # tekst maken
-        screen.blit(deal_text, (555, 480)) # tekst op het scherm plakken
-        button_list.append(deal) # Deal Hand op scherm
+        # instantie van button voor DEAL HAND
+        deal_button = Button(
+            text="DEAL HAND",
+            x= 530,
+            y= 450,
+            width=300,
+            height= 100,
+            font= font,
+            base_color= (0, 100, 0),
+            hover_color= (144, 238, 144),
+            text_color= (0, 0, 0),
+            hover_text_color= "white")
+
+        deal_button.draw(screen) # draw() methode aanroepen
+        button_list.append(deal_button) # Deal Hand op scherm
 
     # Als het spel gestart is geef opties voor hit and stand
     else:
-        #hit button
-        hit = pygame.draw.rect(screen, (0, 100, 0), [530, 620, 200, 70], 0, 5)
-        pygame.draw.rect(screen, "black", [530, 620, 200, 70], 3, 5)
-        hit_text = font.render("HIT ME", True, "black")
-        screen.blit(hit_text, (555, 635)) #Plakt de tekst (text_surface) op deze coördinaten (x, y) op het scherm
-        button_list.append(hit)
+        # Hit button
+        hit_button = Button(
+            text="HIT",
+            x= 530,
+            y= 620,
+            width= 200,
+            height= 70,
+            font= font,
+            base_color= (0, 100, 0),
+            hover_color= (144, 238, 144),
+            text_color= (0, 0, 0),
+            hover_text_color= "white")
+        hit_button.draw(screen)
+        button_list.append(hit_button)
 
-        #stand button
-        stand = pygame.draw.rect(screen, (0, 100, 0), [750, 620, 200, 70], 0, 5)
-        pygame.draw.rect(screen, "black", [750, 620, 200, 70], 3, 5)
-        stand_text = font.render("STAND", True, "black")
-        screen.blit(stand_text, (785, 635))
-        button_list.append(stand)
+        # Stand button
+        stand_button = Button(
+            text="STAND",
+            x= 750,
+            y= 620,
+            width= 200,
+            height= 70,
+            font= font,
+            base_color= (0, 100, 0),
+            hover_color= (144, 238, 144),
+            text_color= (0, 0, 0),
+            hover_text_color= "white")
+        stand_button.draw(screen)
+        button_list.append(stand_button)
 
         score_text = smaller_font.render(f"Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}", True, "white")
         screen.blit(score_text, (450, 10))
@@ -165,12 +241,21 @@ def draw_game(act, record, result):
     # Als er een uitkomst is moet die op het scherm gezet worden, en komt er een herstart knop
     if result != 0:      # Als er een uitslag is
         screen.blit(font.render(results[result], True, "white"), (580, 420))
-        deal = pygame.draw.rect(screen, (0, 100, 0), [580, 500, 300, 100], 0, 5) # Met draw.rect een rechthoek tekenen op het scherm
-        pygame.draw.rect(screen, "black", [580, 500, 300, 100], 3, 5) # Rand maken om rechthoek
-        pygame.draw.rect(screen, "white", [583, 503, 294, 94], 3, 5) # Rand maken om rechthoek
-        deal_text = font.render("NEW HAND", True, "black") # tekst maken
-        screen.blit(deal_text, (610, 525)) # tekst op het scherm plakken
-        button_list.append(deal) # Deal Hand op scherm
+
+        new_hand_button = Button(
+            text="NEW HAND",
+            x= 580,
+            y= 500,
+            width= 300,
+            height= 100,
+            font= font,
+            base_color= (0, 100, 0),
+            hover_color= (144, 238, 144),
+            text_color= (0, 0, 0),
+            hover_text_color= "white")
+        
+        new_hand_button.draw(screen)
+        button_list.append(new_hand_button)
 
     return button_list
 
@@ -192,20 +277,23 @@ def check_endgame(hand_act, dealer_score, player_score, result, totals, add):
         if add:
             if result == 1 or result == 3:  # Bij verlies
                 totals[1] += 1
+                losing_sound.play()
             elif result == 2:               # Bij wist
                 totals[0] += 1
+                winning_sound.play()
             else:                           # Bij gelijkspel
                 totals[2] += 1
+                draw_sound.play()
             add = False
 
     return result, totals, add
 
 
 
-################################################################################
+#-----------------------------#
+#        Main Game Loop       #
+#-----------------------------#
 
-
-# Main game loop
 run = True
 while run:          # Blijft lopen zolang de game "draait"abs
     
@@ -219,7 +307,6 @@ while run:          # Blijft lopen zolang de game "draait"abs
         for i in range(2):      # Eerste beurt worden er om en om in totaal twee kaarten gedeeld voor speler en dealer
             my_hand,game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
-        #print(my_hand, dealer_hand)
         initial_deal = False    # na de eerste beurt 1 kaart per beurt
 
     # Als het stel active(true) is, er kaarten gedeeld zijn, bereken de score en teken de kaarten
@@ -244,8 +331,8 @@ while run:          # Blijft lopen zolang de game "draait"abs
     # Event voor klik op de button "deal"
         if event.type == pygame.MOUSEBUTTONUP:
             if not active:   # Als er geen spel actief is dan is de "deal" button zichtbaar
-                if buttons[0].collidepoint(event.pos):   # button[0] = deal, collidepoint(event.pos) = als er met de muis op deal geklikt wordt
-                    
+                if buttons[0].is_clicked(event):   # button[0] = deal, in de classe methode wordt gekeken naar collidepoint(event.pos) = als er met de muis op deal geklikt wordt
+                    deal_hand_sound.play()
                     # Game wordt gestart
                     # Reset van hand, dealer en deck
                     active = True 
@@ -259,13 +346,14 @@ while run:          # Blijft lopen zolang de game "draait"abs
                     add_score = True        # resset zodat score geteld kan worden       
 
             else: # Hier onder kijken we naar een klick op hit me als de speler score lager is dan 21 en het spel actief is
-                if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                if buttons[0].is_clicked(event) and player_score < 21 and hand_active:
                     my_hand, game_deck = deal_cards(my_hand, game_deck)         # Deelt een nieuwe kaart aan speler
-                elif buttons[1].collidepoint(event.pos) and not reveal_dealer:  # Als er geklikt wordt op stand stopt het spel en wordt de score deler zichtbaar
+                elif buttons[1].is_clicked(event) and not reveal_dealer:  # Als er geklikt wordt op stand stopt het spel en wordt de score deler zichtbaar
                     reveal_dealer = True        # Kaarten en score deler zichtbaar
                     hand_active = False         # Spel stopt
                 elif len(buttons) == 3:
-                    if buttons[2]. collidepoint(event.pos):
+                    if buttons[2].is_clicked(event):
+                        deal_hand_sound.play()
                         # Alles wordt gereset
                         active = True 
                         initial_deal = True 
