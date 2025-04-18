@@ -34,21 +34,21 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT]) # Surface-object (een soort ca
 pygame.display.set_caption("Pygame BlackJack") # Titel voor de adressbalk 
 fps = 60 # Frames per seconde
 timer = pygame.time.Clock()
-font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 44) # font-family en font-size
-smaller_font = pygame.font.Font("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 36) # font-family en font-size
+font = pygame.font.Font("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 44) # font-family en font-size
+smaller_font = pygame.font.Font("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 36) # font-family en font-size
 
 # Afbeeldingen inladen en alpha waarde aanpassen
-background = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/backgroundJungleSteampunk.webp").convert_alpha()
+background = pygame.image.load("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/backgroundJungleSteampunk.webp").convert_alpha()
 background.set_alpha(120)  # Lichter maken
-logo_image = pygame.image.load("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/logoSteampunkProgramar.webp").convert_alpha()
+logo_image = pygame.image.load("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/logoSteampunkProgramar.webp").convert_alpha()
 logo_scaled = pygame.transform.scale(logo_image, (350, 350))    # Grote plaatje instellen
 logo_rect = logo_scaled.get_rect(center=(WIDTH // 1.5, HEIGHT // 3))    # Plaatje tekenen ten opzichte van het midden
 
 # Geluiden inladen 
-deal_hand_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/game-start-6104.mp3")
-winning_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/goodresult-82807.mp3")
-losing_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/game-over-arcade-6435.mp3")
-draw_sound = pygame.mixer.Sound("pygameDevelopmentProject/pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/video-game-bonus-323603.mp3")
+deal_hand_sound = pygame.mixer.Sound("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/game-start-6104.mp3")
+winning_sound = pygame.mixer.Sound("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/goodresult-82807.mp3")
+losing_sound = pygame.mixer.Sound("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/game-over-arcade-6435.mp3")
+draw_sound = pygame.mixer.Sound("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/gamesounds/video-game-bonus-323603.mp3")
 
 
 # variabelen voor de gameplay
