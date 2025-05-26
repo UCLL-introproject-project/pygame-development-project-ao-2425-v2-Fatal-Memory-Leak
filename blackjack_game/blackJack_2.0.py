@@ -6,16 +6,16 @@ pygame.init() #initialiseert alle Pygame-modules
 pygame.mixer.init()
 
 
-#-----------------------------------------------#
-#          Aanmaken van alle variabele          #
-#-----------------------------------------------#
+#------------------------------------------------#
+#          Aanmaken van alle variabelen          #
+#------------------------------------------------#
 
 # Deck met kaarten aanmaken voor het spel
 kaarten = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'B', 'V', 'K', 'A']
 kaart_spel = 4 * kaarten
-decks = 4 #Met hoeveel kaartspelen wordt gespeeld
+decks = 4 #Met hoeveel kaartspelen wordt er gespeeld
 
-# Aanmaken variabele voor de grote van het spel (pygame window/scherm)
+# Aanmaken variabelen voor de grote van het spel (pygame window/scherm)
 WIDTH = 1024
 HEIGHT = 700
 
@@ -37,11 +37,11 @@ timer = pygame.time.Clock()
 font = pygame.font.Font("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 44) # font-family en font-size
 smaller_font = pygame.font.Font("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/marimpa/Marimpa.ttf", 36) # font-family en font-size
 
-# Afbeeldingen inladen en alpha waarde aanpassen
+# Afbeeldingen inladen en alpha waarde aanpassen (is opacity)
 background = pygame.image.load("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/backgroundJungleSteampunk.webp").convert_alpha()
 background.set_alpha(120)  # Lichter maken
 logo_image = pygame.image.load("pygame-development-project-ao-2425-v2-Fatal-Memory-Leak/blackjack_game/resources/images/logoSteampunkProgramar.webp").convert_alpha()
-logo_scaled = pygame.transform.scale(logo_image, (350, 350))    # Grote plaatje instellen
+logo_scaled = pygame.transform.scale(logo_image, (350, 350))    # Grootte plaatje instellen
 logo_rect = logo_scaled.get_rect(center=(WIDTH // 1.5, HEIGHT // 3))    # Plaatje tekenen ten opzichte van het midden
 
 # Geluiden inladen 
@@ -61,14 +61,14 @@ my_hand = [] # Kaarten in spelers hand
 dealer_hand = [] # Kaarten in de delers hand
 outcome = 0 # Waarde wordt gebruikt om een element uit de lijst results te kiezen
 reveal_dealer = False # kaarten van de deler zijn geheim tot het einde van het spel
-hand_active = False #Na de deeling wordt de hand active gemaakt door event handling
+hand_active = False #Na het delen wordt de hand active gemaakt door event handling
 add_score = False
 results = ["", "Player Busted", "Player Wins", "Dealer Wins", "Tie Game"]
 
 
 
 #----------------------------------#
-#       Aanmaken button classe     #
+#       Aanmaken button klasse     #
 #----------------------------------#
 
 
@@ -158,7 +158,7 @@ def calculate_score(hand):
     hand_score = 0
     ace_count = hand.count("A") # count telt het aantal elementen van de parametern ("A")
 
-    # Deze for loop berekend de maximale score van de hand 
+    # Deze for loop berekent de maximale score van de hand 
     for kaart in hand:
         if kaart in kaarten[0:8]:           # Als de kaart in de hand waarde tussen 2 en 9 heeft
             hand_score += int(kaart)        # String naar int en optelen bij totaal
@@ -278,7 +278,7 @@ def check_endgame(hand_act, dealer_score, player_score, result, totals, add):
             if result == 1 or result == 3:  # Bij verlies
                 totals[1] += 1
                 losing_sound.play()
-            elif result == 2:               # Bij wist
+            elif result == 2:               # Bij winst
                 totals[0] += 1
                 winning_sound.play()
             else:                           # Bij gelijkspel
@@ -295,7 +295,7 @@ def check_endgame(hand_act, dealer_score, player_score, result, totals, add):
 #-----------------------------#
 
 run = True
-while run:          # Blijft lopen zolang de game "draait"abs
+while run:          # Blijft lopen zolang de game "draait"
     
     # Game laten draaien op framerate en achtergrond instellen
     timer.tick(fps)
@@ -309,9 +309,9 @@ while run:          # Blijft lopen zolang de game "draait"abs
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
         initial_deal = False    # na de eerste beurt 1 kaart per beurt
 
-    # Als het stel active(true) is, er kaarten gedeeld zijn, bereken de score en teken de kaarten
+    # Als het stel active(true) is en er kaarten gedeeld zijn, bereken de score en teken de kaarten
     if active:
-        player_score = calculate_score(my_hand)             # score speler worden berekend door de functie
+        player_score = calculate_score(my_hand)             # score speler wordt berekend door de functie
         draw_cards(my_hand, dealer_hand, reveal_dealer)     # kaarten worden getekend op het scherm
 
         if reveal_dealer:                                   # als reveal dealer is true dan stopt de speler en vraagt naar de kaarten van de deler
@@ -324,7 +324,7 @@ while run:          # Blijft lopen zolang de game "draait"abs
 
 
     # Event handling, voor afsluiten spel
-    for event in pygame.event.get():
+    for event in pygame.event.get(): # Haalt alle events op die momenteel in de event queue staan
         if event.type == pygame.QUIT:
             run = False
     
